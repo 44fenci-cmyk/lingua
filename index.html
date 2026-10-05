@@ -101,8 +101,9 @@ function rCards(){
   const c=q.c,p=pg(c.id,q.k),W=`<div class="big">${esc(c.word)}</div>${sp(c.word)}`,M=`<div class="big">${esc(c.meaning)}</div>`;
   const lab=`<span class="lv">${q.k==='nl'?'NL → TR':'TR → NL'} ${lvl(p.l)}</span>`;
   const an=c.antonym?`<div class="ant">↔ ${esc(c.antonym)}${c.antonymMeaning?' ('+esc(c.antonymMeaning)+')':''}</div>`:'';
+  const ex=c.meaningExtra?`<div class="ant">${esc(c.meaningExtra)}</div>`:'';
   const se=c.sentence?`<div class="sen">${esc(c.sentence)}</div>${sp(c.sentence)}`:'';
-  h+=`<div class="pb"><i style="width:${i/Q.length*100}%"></i></div><div class="cw" id="cw"><div class="card${fl?' f':''}" style="--c:${dk(c.deckId).color||'#F2B84B'}"><div class="face">${lab}${q.k==='nl'?W:M}<span class="hint">dokun: çevir</span></div><div class="face back">${lab}${q.k==='nl'?M:W}${se}${an}</div></div></div>
+  h+=`<div class="pb"><i style="width:${i/Q.length*100}%"></i></div><div class="cw" id="cw"><div class="card${fl?' f':''}" style="--c:${dk(c.deckId).color||'#F2B84B'}"><div class="face">${lab}${q.k==='nl'?W:M}<span class="hint">dokun: çevir</span></div><div class="face back">${lab}${q.k==='nl'?M:W}${ex}${se}${an}</div></div></div>
   <div class="act"><button class="n" onclick="answer(false)">✗ Bilmiyorum</button><button onclick="undo()" aria-label="Geri al">↶</button><button class="y" onclick="answer(true)">✓ Biliyorum</button></div><div class="cnt">← bilmiyorum · biliyorum →</div>`;
   $('#v').innerHTML=h;bindSwipe();loadV();autoSpeak()}
 function autoSpeak(){const q=Q[i];if(S.auto&&q&&((q.k==='nl'&&!fl)||(q.k==='tr'&&fl)))speak(q.c.word)}
