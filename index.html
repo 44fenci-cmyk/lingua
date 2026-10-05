@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E0F14"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LinguaPrime">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
+<title>LinguaPrime</title>
+<style>
+:root{--bg:#0E0F14;--pa:#181A22;--tx:#F1EEE6;--mu:#8D8F9A;--ok:#4FC38A;--no:#EE6B6B;--ac:#F2B84B;font-family:Georgia,"Iowan Old Style",serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx)}
+body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow-x:hidden}
+button,select,input{font:inherit;color:inherit;touch-action:manipulation}
+nav{display:flex;gap:4px;padding:8px;border-bottom:1px solid #262833}
+nav button{flex:1;background:none;border:0;padding:10px 2px;border-radius:10px;color:var(--mu);font-size:15px}
+nav button.on{background:var(--pa);color:var(--ac)}
+#dk{padding:6px 12px 0}
+details summary{color:var(--mu);font-size:14px;padding:6px 0;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 8px}
+.chip{border:1px solid #333645;background:none;border-radius:99px;padding:6px 11px;font-size:13px}
+.chip.on{background:var(--ac);color:#111;border-color:var(--ac)}
+#v{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 12px 14px;gap:12px;min-height:0;overflow-y:auto}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+select,.ic{background:var(--pa);border:1px solid #333645;border-radius:10px;padding:8px 10px}
+.ic.on{border-color:var(--ac)}
+.cnt{color:var(--mu);font-size:14px}
+.pb{width:min(92vw,520px);height:3px;background:#262833;border-radius:2px}.pb i{display:block;height:100%;background:var(--ac);border-radius:2px}
+.warn{color:var(--ac);font-size:13px;text-align:center}
+.cw{width:min(92vw,520px);height:clamp(260px,50vh,430px);touch-action:pan-y;user-select:none;-webkit-user-select:none;perspective:1200px;cursor:grab;border-radius:22px;border:2px solid transparent;transition:transform .22s}
+.cw[data-s=r]{border-color:var(--ok)}.cw[data-s=l]{border-color:var(--no)}
+.card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .35s}
+.card.f{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--pa);border-radius:20px;border-top:5px solid var(--c,var(--ac));padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;overflow:auto}
+.back{transform:rotateY(180deg)}
+.big{font-size:clamp(28px,7vw,40px);line-height:1.15;word-break:break-word}
+.sen{color:#cfcbc0;font-style:italic;font-size:17px}
+.ant{color:var(--ac);font-size:16px}
+.lv{position:absolute;top:10px;left:14px;color:var(--mu);font-size:12px}
+.sp{background:#262833;border:0;border-radius:99px;width:44px;height:44px;font-size:20px}
+.hint{position:absolute;bottom:8px;color:var(--mu);font-size:12px}
+.act{display:flex;gap:10px;width:min(92vw,520px)}
+.act button,.btn{flex:1;border:0;border-radius:14px;padding:14px 8px;font-size:16px;background:var(--pa);border:1px solid #333645}
+.act .y{background:var(--ok);color:#0a1a12;border:0}.act .n{background:var(--no);color:#2a0c0c;border:0}
+.btn.p{background:var(--ac);color:#111;border:0}
+.box{width:min(92vw,520px);display:flex;flex-direction:column;gap:12px}
+input[type=text]{width:100%;background:var(--pa);border:1px solid #333645;border-radius:12px;padding:14px;font-size:20px;text-align:center}
+.g{color:var(--ok)}.r{color:var(--no);text-decoration:underline}
+.opt{background:var(--pa);border:1px solid #333645;border-radius:12px;padding:14px;font-size:18px}
+.opt.ok{background:var(--ok);color:#0a1a12}.opt.no{background:var(--no);color:#2a0c0c}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #262833}
+#t{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#fff;color:#111;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+#t.s{opacity:1}
+@media(prefers-reduced-motion:reduce){.card,.cw{transition:none}}
+</style></head><body>
+<nav id="nav"></nav><div id="dk"></div><div id="v"></div><div id="t"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let D={decks:[],cards:[]},P=ld('lp_p',{}),S=Object.assign({decks:[],dir:'nl',flt:'all',shuf:true,auto:false,rate:.9,voice:'',th:3,art:true,acc:true},ld('lp_s',{}));
+let view='cards',Q=[],i=0,fl=false,H=[],ses={ok:0,no:0},busy=false,V=[],dopen=false;
+let SQ=[],si=0,sd=false,hl=0,s2={ok:0,no:0},AQ=[],ai=0,ao=[],ad=false,as=0;
+const save=()=>{sv('lp_p',P);sv('lp_s',S)};
+const IV=[0,1,3,7,14,30].map(x=>x*864e5);
+const pg=(id,k)=>(P[id]&&P[id][k])||{l:0,d:0,n:0};
+const dk=id=>D.decks.find(d=>d.id===id)||{};
+const pool=()=>D.cards.filter(c=>!S.decks.length||S.decks.includes(c.deckId));
+const shuf=a=>{for(let j=a.length-1;j>0;j--){const r=Math.random()*(j+1)|0;[a[j],a[r]]=[a[r],a[j]]}return a};
+const lvl=n=>'●'.repeat(n)+'○'.repeat(5-n);
+function toast(m){const t=$('#t');t.textContent=m;t.classList.add('s');setTimeout(()=>t.classList.remove('s'),2200)}
+window.set=(k,v)=>{S[k]=v;save()};
+
+/* Ses */
+function loadV(){if(!('speechSynthesis' in window))return;V=speechSynthesis.getVoices().filter(v=>/^nl/i.test(v.lang));const n=$('#vn');if(n)n.hidden=V.length>0;if(view==='set')rSet()}
+if('speechSynthesis' in window){loadV();speechSynthesis.onvoiceschanged=loadV}
+function speak(t){if(!('speechSynthesis' in window))return toast('Bu tarayıcı sesli okumayı desteklemiyor');speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='nl-NL';u.rate=S.rate;const v=V.find(v=>v.voiceURI===S.voice)||V[0];if(v)u.voice=v;else toast('Hollandaca ses bulunamadı. Ayarlar sayfasına bak.');speechSynthesis.speak(u)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b){e.stopPropagation();speak(b.dataset.say)}});
+const sp=t=>`<button class="sp" data-say="${esc(t)}" aria-label="Dinle">🔊</button>`;
+
+/* Gezinme */
+const TABS=[['cards','📇 Kartlar'],['spell','✍️ Yazım'],['ant','↔ Zıt'],['set','⚙️ Ayarlar']];
+window.go=v=>{view=v;if(v==='cards')buildQ();if(v==='spell')buildSQ();if(v==='ant')buildAQ();render()};
+function render(){
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button class="${k===view?'on':''}" onclick="go('${k}')">${l}</button>`).join('');
+  $('#dk').innerHTML=view==='set'?'':`<details${dopen?' open':''} ontoggle="dopen=this.open"><summary>Desteler (${S.decks.length||'tümü'})</summary><div class="chips"><button class="chip${S.decks.length?'':' on'}" onclick="S.decks=[];save();go(view)">Tümü</button>${D.decks.map(d=>`<button class="chip${S.decks.includes(d.id)?' on':''}" onclick="tg('${d.id}')">${d.emoji||''} ${esc(d.name)}</button>`).join('')}</div></details>`;
+  ({cards:rCards,spell:rSpell,ant:rAnt,set:rSet})[view]();
+}
+window.tg=id=>{const a=S.decks,j=a.indexOf(id);j<0?a.push(id):a.splice(j,1);save();go(view)};
+const empty=m=>{$('#v').innerHTML=`<p class="cnt" style="text-align:center;max-width:420px">${m}</p>`};
+
+/* Kartlar */
+function buildQ(){const now=Date.now(),L=[];for(const c of pool()){const k=S.dir==='mix'?(Math.random()<.5?'nl':'tr'):S.dir,p=pg(c.id,k);
+  if(S.flt==='new'&&p.n)continue;if(S.flt==='unk'&&!(p.n&&p.l<3))continue;if(S.flt==='due'&&!(p.n&&p.d<=now))continue;L.push({c,k})}
+  Q=S.shuf?shuf(L):L;i=0;fl=false;H=[];ses={ok:0,no:0};busy=false}
+function rCards(){
+  const sel=(k,o)=>`<select onchange="set('${k}',this.value);go('cards')">${o.map(([a,b])=>`<option value="${a}"${S[k]===a?' selected':''}>${b}</option>`).join('')}</select>`;
+  let h=`<div class="ctl">${sel('dir',[['nl','NL → TR'],['tr','TR → NL'],['mix','Karışık']])}${sel('flt',[['all','Hepsi'],['new','Yeni'],['unk','Bilmediklerim'],['due','Bugün tekrar']])}<button class="ic${S.shuf?' on':''}" onclick="set('shuf',!S.shuf);go('cards')" aria-label="Karıştır">🔀</button><span class="cnt">${Math.min(i+1,Q.length)}/${Q.length}</span></div><div id="vn" class="warn" hidden>⚠ Hollandaca ses bulunamadı (Ayarlar sayfasına bak)</div>`;
+  if(!D.cards.length)return empty('Kelime listesi yüklenemedi. Ayarlar sayfasından words.json dosyasını yükle.');
+  const q=Q[i];
+  if(!q){h+=`<p class="big" style="margin-top:40px">${Q.length?'Bitti 🎉':'Bu filtrede kart yok'}</p><p class="cnt">${ses.ok} biliyorum · ${ses.no} bilmiyorum</p><button class="btn p" style="flex:none;padding:14px 28px" onclick="go('cards')">Yeniden başla</button>`;$('#v').innerHTML=h;return loadV()}
+  const c=q.c,p=pg(c.id,q.k),W=`<div class="big">${esc(c.word)}</div>${sp(c.word)}`,M=`<div class="big">${esc(c.meaning)}</div>`;
+  const lab=`<span class="lv">${q.k==='nl'?'NL → TR':'TR → NL'} ${lvl(p.l)}</span>`;
+  const an=c.antonym?`<div class="ant">↔ ${esc(c.antonym)}${c.antonymMeaning?' ('+esc(c.antonymMeaning)+')':''}</div>`:'';
+  const se=c.sentence?`<div class="sen">${esc(c.sentence)}</div>${sp(c.sentence)}`:'';
+  h+=`<div class="pb"><i style="width:${i/Q.length*100}%"></i></div><div class="cw" id="cw"><div class="card${fl?' f':''}" style="--c:${dk(c.deckId).color||'#F2B84B'}"><div class="face">${lab}${q.k==='nl'?W:M}<span class="hint">dokun: çevir</span></div><div class="face back">${lab}${q.k==='nl'?M:W}${se}${an}</div></div></div>
+  <div class="act"><button class="n" onclick="answer(false)">✗ Bilmiyorum</button><button onclick="undo()" aria-label="Geri al">↶</button><button class="y" onclick="answer(true)">✓ Biliyorum</button></div><div class="cnt">← bilmiyorum · biliyorum →</div>`;
+  $('#v').innerHTML=h;bindSwipe();loadV();autoSpeak()}
+function autoSpeak(){const q=Q[i];if(S.auto&&q&&((q.k==='nl'&&!fl)||(q.k==='tr'&&fl)))speak(q.c.word)}
+function flip(){if(!Q[i]||busy)return;fl=!fl;$('.card').classList.toggle('f',fl);autoSpeak()}
+function answer(ok){const q=Q[i];if(!q||busy||view!=='cards')return;busy=true;const cw=$('#cw');cw.style.transform=`translateX(${ok?'':'-'}120vw) rotate(${ok?18:-18}deg)`;
+  setTimeout(()=>{const had=!!(P[q.c.id]&&P[q.c.id][q.k]);H.push({i,id:q.c.id,k:q.k,p:JSON.stringify(pg(q.c.id,q.k)),had,re:!ok});
+    P[q.c.id]=P[q.c.id]||{};const o=pg(q.c.id,q.k);o.n=(o.n||0)+1;o.l=ok?Math.min(5,o.l+1):0;o.d=Date.now()+IV[o.l];P[q.c.id][q.k]=o;save();
+    ok?ses.ok++:(ses.no++,Q.push(q));i++;fl=false;busy=false;rCards()},230)}
+function undo(){const h=H.pop();if(!h||busy)return;if(h.had)P[h.id][h.k]=JSON.parse(h.p);else delete P[h.id][h.k];save();if(h.re){Q.pop();ses.no--}else ses.ok--;i=h.i;fl=false;rCards()}
+function bindSwipe(){const cw=$('#cw');let sx=0,dx=0,dr=false;
+  cw.onpointerdown=e=>{if(busy||e.target.closest('button'))return;sx=e.clientX;dx=0;dr=true;cw.style.transition='none';try{cw.setPointerCapture(e.pointerId)}catch(_){}};
+  cw.onpointermove=e=>{if(!dr)return;dx=e.clientX-sx;cw.style.transform=`translateX(${dx}px) rotate(${dx/22}deg)`;cw.dataset.s=dx>50?'r':dx<-50?'l':''};
+  const end=()=>{if(!dr)return;dr=false;cw.style.transition='';cw.dataset.s='';if(Math.abs(dx)>90)answer(dx>0);else{cw.style.transform='';if(Math.abs(dx)<6)flip()}};
+  cw.onpointerup=end;cw.onpointercancel=()=>{dr=false;cw.style.transition='';cw.style.transform='';cw.dataset.s=''}}
+addEventListener('keydown',e=>{if(view!=='cards'||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;if(e.key==='ArrowRight')answer(true);else if(e.key==='ArrowLeft')answer(false);else if(e.key===' '){e.preventDefault();flip()}});
+
+/* Yazım */
+const norm=s=>{s=s.trim().toLowerCase().replace(/\s+/g,' ');return S.acc?s.normalize('NFD').replace(/[\u0300-\u036f]/g,''):s};
+const st=s=>S.art?s:s.replace(/^(de|het)\s+/i,'');
+function buildSQ(){SQ=shuf(pool().filter(c=>Math.max(pg(c.id,'nl').l,pg(c.id,'tr').l)>=S.th));si=0;sd=false;hl=0;s2={ok:0,no:0}}
+function rSpell(){
+  if(!SQ.length)return empty(`Yazım için seviyesi ${S.th} ve üstü kelime yok. Kartlarda çalışıp seviye kazan veya Ayarlar'dan eşiği düşür.`);
+  if(si>=SQ.length){$('#v').innerHTML=`<p class="big" style="margin-top:40px">Bitti 🎉</p><p class="cnt">${s2.ok} doğru · ${s2.no} yanlış</p><button class="btn p" style="flex:none;padding:14px 28px" onclick="go('spell')">Yeniden başla</button>`;return}
+  const c=SQ[si];
+  $('#v').innerHTML=`<div class="cnt">${si+1}/${SQ.length}</div><div class="box" style="align-items:center;text-align:center"><div class="big">${esc(c.meaning)}</div>${sp(c.word)}<input type="text" id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Hollandaca yaz" onkeydown="if(event.key==='Enter')chk()"><div id="res" class="big"></div><div class="act" style="width:100%"><button onclick="hint()">💡 İpucu</button><button class="btn p" id="ck" onclick="chk()">Kontrol et</button></div></div>`;
+  sd=false;hl=0;const n=$('#in');if(n)n.focus({preventScroll:true})}
+window.hint=()=>{if(sd)return;const t=st(SQ[si].word);hl=Math.min(t.length,hl+1);$('#res').innerHTML=`<span class="cnt">${esc(t.slice(0,hl))+t.slice(hl).replace(/[^ ]/g,'_')}</span>`};
+window.chk=()=>{if(sd){si++;return rSpell()}const c=SQ[si],t=st(c.word),a=norm(t),b=norm(st($('#in').value));const ok=a===b;
+  P[c.id]=P[c.id]||{};const s=P[c.id].sp||{ok:0,bad:0};ok?s.ok++:s.bad++;P[c.id].sp=s;save();s2[ok?'ok':'no']++;if(!ok)SQ.push(c);sd=true;
+  $('#res').innerHTML=[...t].map((ch,j)=>`<span class="${a[j]===b[j]?'g':'r'}">${esc(ch)}</span>`).join('')+(ok?' ✓':'');$('#ck').textContent='Sonraki';speak(c.word)};
+
+/* Zıt anlamlı testi */
+function buildAQ(){AQ=shuf(pool().filter(c=>c.antonym));ai=0;as=0;ad=false;mkO()}
+function mkO(){const c=AQ[ai];if(!c)return;const all=[...new Set(AQ.map(x=>x.antonym))].filter(x=>x!==c.antonym);ao=shuf([c.antonym,...shuf(all).slice(0,3)])}
+function rAnt(){
+  if(!AQ.length)return empty('Seçili destelerde zıt anlamlısı olan kelime yok. words.json dosyasındaki kartlara <b>antonym</b> alanı eklenince bu test çalışır.');
+  if(ai>=AQ.length){$('#v').innerHTML=`<p class="big" style="margin-top:40px">Bitti 🎉</p><p class="cnt">${as}/${AQ.length} doğru</p><button class="btn p" style="flex:none;padding:14px 28px" onclick="go('ant')">Yeniden başla</button>`;return}
+  const c=AQ[ai];ad=false;
+  $('#v').innerHTML=`<div class="cnt">${ai+1}/${AQ.length}</div><div class="box" style="text-align:center"><div class="big">${esc(c.word)}</div><div class="cnt">${esc(c.meaning)} ${sp(c.word)}</div><div class="cnt">Zıt anlamlısı hangisi?</div>${ao.map(o=>`<button class="opt" data-o="${esc(o)}" onclick="pick(this)">${esc(o)}</button>`).join('')}<button class="btn p" id="nx" hidden onclick="ai++;mkO();rAnt()">Sonraki</button></div>`}
+window.pick=b=>{if(ad)return;ad=true;const c=AQ[ai],ok=b.dataset.o===c.antonym;if(ok)as++;b.classList.add(ok?'ok':'no');document.querySelectorAll('.opt').forEach(x=>{if(x.dataset.o===c.antonym)x.classList.add('ok')});$('#nx').hidden=false};
+
+/* Ayarlar */
+function rSet(){
+  const tg=(k,l)=>`<label class="row"><span>${l}</span><input type="checkbox" ${S[k]?'checked':''} onchange="set('${k}',this.checked)"></label>`;
+  $('#v').innerHTML=`<div class="box">
+  <div class="row"><span>Hollandaca ses</span><select onchange="set('voice',this.value)">${V.length?V.map(v=>`<option value="${esc(v.voiceURI)}"${S.voice===v.voiceURI?' selected':''}>${esc(v.name)} (${esc(v.lang)})</option>`).join(''):'<option>Bulunamadı</option>'}</select></div>
+  ${V.length?'':'<div class="warn">Bu cihazda Hollandaca ses yok. iPhone/Mac: Ayarlar → Erişilebilirlik → Konuşma içerik → Sesler → Hollandaca. Huawei: başka bir tarayıcı (Chrome/Edge) dene veya sistem ses paketine Hollandaca ekle.</div>'}
+  <div class="row"><span>Hız</span><input type="range" min=".5" max="1.3" step=".1" value="${S.rate}" onchange="set('rate',+this.value)"></div>
+  <button class="btn" onclick="speak('Goedemorgen, hoe gaat het met je?')">🔊 Sesi test et</button>
+  ${tg('auto','Otomatik oku (iOS: ilk dokunuştan sonra)')}
+  <div class="row"><span>Yazım modu: min. seviye</span><select onchange="set('th',+this.value)">${[1,2,3,4,5].map(n=>`<option${S.th===n?' selected':''}>${n}</option>`).join('')}</select></div>
+  ${tg('art','Yazımda de/het kontrolü')}${tg('acc','Aksanları (ë, é) yok say')}
+  <button class="btn" onclick="exp()">⬇ İlerlemeyi dışa aktar</button>
+  <label class="btn" style="text-align:center">⬆ İlerlemeyi içe aktar<input type="file" accept=".json" hidden onchange="imp(this.files[0])"></label>
+  <label class="btn" style="text-align:center">📂 Kelime JSON yükle<input type="file" accept=".json" hidden onchange="lw(this.files[0])"></label>
+  <button class="btn" style="color:var(--no)" onclick="rst()">Tüm ilerlemeyi sil</button>
+  <div class="cnt" style="text-align:center">${D.cards.length} kart · ${D.decks.length} deste</div></div>`}
+window.exp=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({P,S})],{type:'application/json'}));a.download='lp-ilerleme.json';a.click()};
+window.imp=f=>f&&f.text().then(t=>{const j=JSON.parse(t);if(!j.P)throw 0;P=j.P;Object.assign(S,j.S||{});save();toast('İçe aktarıldı');go('cards')}).catch(()=>toast('Geçersiz ilerleme dosyası'));
+window.lw=f=>f&&f.text().then(t=>{const j=JSON.parse(t);if(!Array.isArray(j.cards))throw 0;D={decks:j.decks||[],cards:j.cards};sv('lp_d',D);toast('Yüklendi: '+D.cards.length+' kart');go('cards')}).catch(()=>toast('Geçersiz kelime JSON'));
+window.rst=()=>{if(confirm('Tüm ilerleme silinsin mi?')){P={};save();toast('Silindi');rSet()}};
+
+(async()=>{try{const r=await fetch('words.json',{cache:'no-cache'});if(!r.ok)throw 0;D=await r.json()}catch(e){D=ld('lp_d',D)}go('cards')})();
+</script></body></html>
